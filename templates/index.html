@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardiac Risk Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #064e3b;
+            --glass-bg: rgba(6, 78, 59, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --primary: #10b981;
+            --primary-hover: #059669;
+            --text-main: #f8fafc;
+            --text-muted: #a7f3d0;
+            --accent: #34d399;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #064e3b);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 2rem auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #6ee7b7;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #d1fae5;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+        }
+
+        button {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
+        }
+
+        .result-visible {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        .danger {
+            background: rgba(225, 29, 72, 0.2);
+            border: 1px solid rgba(225, 29, 72, 0.4);
+            color: #fda4af;
+        }
+
+        .safe {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #6ee7b7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Cardiac Risk Assessment</h1>
+        <p class="subtitle">Powered by Logistic Regression Model</p>
+
+        <form id="predictForm">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Age</label>
+                    <input type="number" id="age" required>
+                </div>
+                <div class="input-group">
+                    <label>Sex (1=M, 0=F)</label>
+                    <input type="number" id="sex" required min="0" max="1">
+                </div>
+                <div class="input-group">
+                    <label>Chest Pain (0-3)</label>
+                    <input type="number" id="cp" required>
+                </div>
+                <div class="input-group">
+                    <label>Resting BP</label>
+                    <input type="number" id="trestbps" required>
+                </div>
+                <div class="input-group">
+                    <label>Cholesterol</label>
+                    <input type="number" id="chol" required>
+                </div>
+                <div class="input-group">
+                    <label>Fasting Blood Sugar > 120 (1/0)</label>
+                    <input type="number" id="fbs" required>
+                </div>
+                <div class="input-group">
+                    <label>Resting ECG (0-2)</label>
+                    <input type="number" id="restecg" required>
+                </div>
+                <div class="input-group">
+                    <label>Max Heart Rate</label>
+                    <input type="number" id="thalach" required>
+                </div>
+                <div class="input-group">
+                    <label>Exercise Angina (1/0)</label>
+                    <input type="number" id="exang" required>
+                </div>
+                <div class="input-group">
+                    <label>Oldpeak</label>
+                    <input type="number" step="0.1" id="oldpeak" required>
+                </div>
+                <div class="input-group">
+                    <label>Slope (0-2)</label>
+                    <input type="number" id="slope" required>
+                </div>
+                <div class="input-group">
+                    <label>Major Vessels (0-4)</label>
+                    <input type="number" id="ca" required>
+                </div>
+                <div class="input-group">
+                    <label>Thal (0-3)</label>
+                    <input type="number" id="thal" required>
+                </div>
+                
+                <button type="submit" id="submitBtn">Evaluate Risk</button>
+            </div>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('predictForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const resultDiv = document.getElementById('result');
+            btn.textContent = "Processing...";
+            btn.style.opacity = 0.7;
+
+            const data = {
+                age: document.getElementById('age').value,
+                sex: document.getElementById('sex').value,
+                cp: document.getElementById('cp').value,
+                trestbps: document.getElementById('trestbps').value,
+                chol: document.getElementById('chol').value,
+                fbs: document.getElementById('fbs').value,
+                restecg: document.getElementById('restecg').value,
+                thalach: document.getElementById('thalach').value,
+                exang: document.getElementById('exang').value,
+                oldpeak: document.getElementById('oldpeak').value,
+                slope: document.getElementById('slope').value,
+                ca: document.getElementById('ca').value,
+                thal: document.getElementById('thal').value
+            };
+
+            for (let key in data) {
+                data[key] = parseFloat(data[key]);
+            }
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const json = await response.json();
+                
+                resultDiv.classList.remove('danger', 'safe', 'result-visible');
+                
+                setTimeout(() => {
+                    if (json.prediction.toLowerCase().includes("normal") || json.prediction.toLowerCase().includes("no")) {
+                        resultDiv.textContent = "Status: Normal (Low Risk)";
+                        resultDiv.classList.add('safe');
+                    } else {
+                        resultDiv.textContent = "Status: High Risk Detected";
+                        resultDiv.classList.add('danger');
+                    }
+                    resultDiv.classList.add('result-visible');
+                }, 50);
+
+            } catch (error) {
+                resultDiv.textContent = "Error connecting to service.";
+                resultDiv.classList.add('danger', 'result-visible');
+            } finally {
+                btn.textContent = "Evaluate Risk";
+                btn.style.opacity = 1;
+            }
+        });
+    </script>
+</body>
+</html>
